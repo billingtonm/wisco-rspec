@@ -18,6 +18,7 @@
 # Then the shared example will use the input file to run the action and compare the output to the expected output fixture.
 
 require_relative 'this_connector'
+require_relative 'schema_helpers'
 
 # -----------------------------------------------------------------------------
 def read_fixture(path)
@@ -66,9 +67,17 @@ RSpec.shared_examples 'a standard action' do |action_name|
   let(:action) { connector.actions.public_send(action_name) }
 
   describe 'execute' do
+    let(:expected_output) { JSON.parse(read_fixture("#{fixture_path}/expected_execute_test.json")) }
     subject { action.execute(settings, JSON.parse(read_fixture("#{fixture_path}/execute_test.json"))) }
-    it_behaves_like 'returns expected output' do
-      let(:expected_output) { JSON.parse(read_fixture("#{fixture_path}/expected_execute_test.json")) }
+
+    it_behaves_like 'returns expected output'
+    it('output is a hash') { expect(subject).to be_a(Hash) }
+
+    describe 'output schema consistency', :vcr do
+      it_behaves_like 'output schema matches actual output',
+        "fixtures/actions/#{action_name}/output_fields.json" do
+        let(:actual_output) { subject }
+      end
     end
   end
 
