@@ -63,7 +63,7 @@ end
 RSpec.shared_examples 'a standard action' do |action_name|
   include_context 'connector'
   let(:fixture_path) { "fixtures/actions/#{action_name}" }
-  let(:config_fields) { JSON.parse(File.read("#{fixture_path}/config_fields.json")) }
+  let(:config_fields) { File.exist?("#{fixture_path}/config_fields.json") ? JSON.parse(File.read("#{fixture_path}/config_fields.json")) : {} }
   let(:action) { connector.actions.public_send(action_name) }
 
   describe 'execute' do
