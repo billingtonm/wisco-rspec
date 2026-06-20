@@ -10,7 +10,7 @@ RSpec.describe 'connector', :vcr do
   describe 'test' do
     subject(:output) { connector.test(settings) }
 
-    it 'establishes valid connection' do
+    it 'establishes valid connection', :no_vcr do
       expect(output).to be_truthy
     end
   end
